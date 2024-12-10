@@ -27,6 +27,13 @@ class Emprendedor(models.Model):
         ('CR', 'Crecimiento'),
     ]
 
+    ORIENTACION_SEXUAL = [
+        ('H', 'Heterosexual'),
+        ('B', 'Bisexual'),
+        ('G', 'Gay'),
+        ('O', 'Otro'),
+    ]
+
     # Datos Personales
     email = models.EmailField(verbose_name="Correo Electrónico")
     primer_nombre = models.CharField(max_length=50)
@@ -37,7 +44,7 @@ class Emprendedor(models.Model):
     cedula = models.CharField(max_length=20, unique=True)
     genero = models.CharField(max_length=1, choices=GENERO_CHOICES)
     fecha_nacimiento = models.DateField()
-    rango_edad = models.CharField(max_length=20, editable=False)  # Hacemos este campo no editable
+    rango_edad = models.CharField(max_length=20, editable=False)  # He definido este campo para calcular la edad en la vista
 
     # Información de Contacto
     direccion_residencia = models.CharField(max_length=100)
@@ -55,7 +62,7 @@ class Emprendedor(models.Model):
     victima_conflicto = models.BooleanField(default=False)
     grupo_etnico = models.BooleanField(default=False)
     habitante_calle = models.BooleanField(default=False)
-    orientacion_sexual = models.CharField(max_length=50, blank=True, null=True)
+    orientacion_sexual = models.CharField(max_length=50, choices=ORIENTACION_SEXUAL, blank=True, null=True)
     victima_violencia_genero = models.BooleanField(default=False)
     cabeza_hogar = models.BooleanField(default=False)
     adulto_mayor = models.BooleanField(default=False)
