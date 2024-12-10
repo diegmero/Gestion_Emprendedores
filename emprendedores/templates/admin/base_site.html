@@ -1,0 +1,151 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    :root {
+        --primary: #003874;
+        --secondary: #0263ca;
+        --accent: #0056b3;
+        --primary-fg: #fff;
+        --body-fg: #333;
+        --body-bg: #fff;
+        --link-fg: #004094;
+    }
+
+    /* Estilos para el modo claro */
+    html[data-theme="light"],
+    html[data-theme="auto"] {
+        --primary: #003874;
+        --secondary: #0263ca;
+        --accent: #0056b3;
+        --primary-fg: #fff;
+        --body-fg: #333;
+        --body-bg: #fff;
+        --link-fg: #004094;
+    }
+
+    /* Estilos para el modo medio (automático) */
+    @media (prefers-color-scheme: dark) {
+        html[data-theme="auto"] {
+            --primary: #003874;
+            --secondary: #0263ca;
+            --accent: #0056b3;
+            --primary-fg: #fff;
+            --body-fg: #e0e0e0;
+            --body-bg: #1f1f1f;
+            --link-fg: #81d4fa;
+        }
+    }
+
+    /* Estilos para el modo oscuro */
+    html[data-theme="dark"] {
+        --primary: #003874;
+        --secondary: #0263ca;
+        --accent: #0056b3;
+        --primary-fg: #fff;
+        --body-fg: #e0e0e0;
+        --body-bg: #121212;
+        --link-fg: #81d4fa;
+    }
+
+    .addlink {
+        background-color: var(--accent) !important;
+        color: var(--primary-fg) !important;
+        padding: 5px 20px !important;
+        border-radius: 4px !important;
+        text-decoration: none !important;
+        display: inline-block !important;
+        margin-top: 10px !important;
+        font-weight: bold !important;
+        transition: background-color 0.3s ease !important;
+    }
+
+    .addlink:hover, .addlink:focus {
+        background-color: var(--secondary) !important;
+        text-decoration: none !important;
+    }
+
+    /* Ajuste específico para el modo claro */
+    html[data-theme="light"] .addlink,
+    html[data-theme="auto"] .addlink {
+        background-color: #0056b3 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    html[data-theme="light"] .addlink:hover,
+    html[data-theme="light"] .addlink:focus,
+    html[data-theme="auto"] .addlink:hover,
+    html[data-theme="auto"] .addlink:focus {
+        background-color: #004094 !important;
+    }
+
+    
+
+    body {
+        color: var(--body-fg);
+        background-color: var(--body-bg);
+    }
+
+    #header {
+        background-color: var(--primary);
+        color: var(--primary-fg);
+    }
+    #header a:link, #header a:visited {
+        color: var(--primary-fg);
+    }
+    #branding h1 {
+        color: var(--primary-fg);
+    }
+
+    div.breadcrumbs {
+        background-color: var(--secondary);
+        color: var(--primary-fg);
+    }
+    .module h2, .module caption, .inline-group h2 {
+        background-color: var(--accent);
+        color: var(--primary-fg);
+    }
+    
+    /* Restaurar colores de enlaces en el contenido */
+    #content a:link, #content a:visited {
+        color: var(--link-fg);
+    }
+
+    /* Asegurar que el selector de tema sea visible */
+    .theme-toggle {
+        display: inline-block !important;
+    }
+    .theme-toggle svg {
+        fill: var(--primary-fg);
+    }
+
+    /* Ajustes adicionales para mejorar la legibilidad en todos los modos */
+    .submit-row input {
+        background-color: var(--accent);
+        color: var(--primary-fg);
+    }
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background-color: var(--accent);
+        color: var(--primary-fg);
+    }
+    .button:active, input[type=submit]:active, input[type=button]:active, .button:focus, input[type=submit]:focus, input[type=button]:focus, .button:hover, input[type=submit]:hover, input[type=button]:hover {
+        background-color: var(--secondary);
+    }
+    .module h2, .module caption, .inline-group h2 {
+        background-color: var(--accent);
+    }
+</style>
+{% endblock %}
+
+{% block title %}{{ title }} | Gestión de Emprendedores{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Gestión de Emprendedores</a></h1>
+{% endblock %}
+
+{% block usertools %}
+    {{ block.super }}
+{% endblock %}
