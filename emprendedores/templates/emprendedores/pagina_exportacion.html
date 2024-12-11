@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Exportar Datos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Exportar Datos</h2>
+    <div class="list-group mt-3">
+        <a href="{% url 'exportar_excel' 'emprendedores' %}" class="list-group-item list-group-item-action">
+            Exportar Emprendedores
+        </a>
+        <a href="{% url 'exportar_excel' 'eventos' %}" class="list-group-item list-group-item-action">
+            Exportar Eventos
+        </a>
+        <a href="{% url 'exportar_excel' 'inscripciones' %}" class="list-group-item list-group-item-action">
+            Exportar Inscripciones
+        </a>
+        <a href="{% url 'exportar_excel' 'asesorias' %}" class="list-group-item list-group-item-action">
+            Exportar Asesorías
+        </a>
+        <a href="{% url 'exportar_excel' 'talleres' %}" class="list-group-item list-group-item-action">
+            Exportar Talleres
+        </a>
+        <a href="{% url 'exportar_excel' 'mercados_campesinos' %}" class="list-group-item list-group-item-action">
+            Exportar Mercados Campesinos
+        </a>
+    </div>
+</div>
+{% endblock %}

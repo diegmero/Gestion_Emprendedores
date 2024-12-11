@@ -16,4 +16,6 @@ urlpatterns = [
     path('eventos/<int:evento_id>/inscribir/', views.inscribir_evento, name='inscribir_evento'),
     path('emprendedores/', views.lista_emprendedores, name='lista_emprendedores'),
     path('inscribir/', views.inscribir_emprendedor, name='inscribir_emprendedor'),
+    path('exportar/', views.pagina_exportacion, name='pagina_exportacion'),
+    path('exportar/<str:modelo>/', views.exportar_excel, name='exportar_excel'),
 ]

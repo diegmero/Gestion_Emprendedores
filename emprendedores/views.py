@@ -156,3 +156,49 @@ def lista_emprendedores(request):
     emprendedores = paginator.get_page(page_number)
     
     return render(request, 'emprendedores/lista_emprendedores.html', {'emprendedores': emprendedores})
+
+
+
+def pagina_exportacion(request):
+    return render(request, 'emprendedores/pagina_exportacion.html')
+
+
+from django.http import HttpResponse
+from openpyxl import Workbook
+from .models import Emprendedor, Evento, Inscripcion
+
+def exportar_excel(request, modelo):
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="{modelo}.xlsx"'
+
+    wb = Workbook()
+    ws = wb.active
+    ws.title = modelo
+
+    # Escribir encabezados
+    if modelo == 'emprendedores':
+        columns = ['Nombre', 'Apellido', 'Cédula', 'Teléfono']
+        queryset = Emprendedor.objects.all()
+    elif modelo == 'eventos':
+        columns = ['Nombre', 'Fecha', 'Lugar']
+        queryset = Evento.objects.all()
+    elif modelo == 'inscripciones':
+        columns = ['Emprendedor', 'Evento', 'Fecha de Inscripción']
+        queryset = Inscripcion.objects.all()
+    else:
+        return HttpResponse("Modelo no válido")
+
+    ws.append(columns)
+
+    # Escribir datos
+    for obj in queryset:
+        if modelo == 'emprendedores':
+            row = [obj.primer_nombre, obj.primer_apellido, obj.cedula, obj.telefono]
+        elif modelo == 'eventos':
+            row = [obj.nombre, str(obj.fecha), obj.lugar]
+        elif modelo == 'inscripciones':
+            row = [str(obj.emprendedor), str(obj.evento), str(obj.fecha_inscripcion)]
+        ws.append(row)
+
+    wb.save(response)
+    return response

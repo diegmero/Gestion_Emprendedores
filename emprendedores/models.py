@@ -136,11 +136,11 @@ class Evento(models.Model):
 
 class Asesoria(Evento):
     asesor = models.CharField(max_length=100)
-    duracion_horas = models.DurationField(null=True, blank=True)
+    duracion_horas = models.PositiveIntegerField(verbose_name="Duración (horas)", null=True, blank=True) 
 
 class Taller(Evento):
     instructor = models.CharField(max_length=100)
-    duracion = models.DurationField()
+    duracion = models.PositiveIntegerField(verbose_name="Duración (horas)", null=True, blank=True) 
 
 class MercadoCampesino(Evento):
     TIPO_PRODUCTOS_CHOICES = [
