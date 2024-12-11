@@ -17,9 +17,8 @@ Este proyecto está protegido por derechos de autor y se comparte con fines excl
 ### Permisos Limitados
 
 Se permite:
-- Visualización del código fuente
-- Estudio individual del proyecto
-- Referencias académicas con cita explícita
+- Visualización personal
+- Estudio académico con citación
 
 **Cualquier uso no autorizado será perseguido legalmente.**
 
@@ -28,3 +27,8 @@ Para solicitar permisos especiales, contactar a: diegmero12@gmail.com
 ### Descargo de Responsabilidad
 
 Este proyecto es para uso institucional.
+
+
+Contacto para autorizaciones: diegmero12@gmail.com
+
+Copyright 2025 Diego Romero
