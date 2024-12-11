@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Emprendedor, Inscripcion, Evento, Asesoria, Taller, MercadoCampesino
+from .models import Emprendedor, Inscripcion, Evento, Asesoria, Taller, MercadoCampesino, VentaEmprendedor
 from django.http import HttpResponse
 import xlwt
 
@@ -113,9 +113,15 @@ class TallerAdmin(admin.ModelAdmin):
         return "-"
     mostrar_duracion.short_description = "Duración (horas)"
 
+@admin.register(VentaEmprendedor)
+class VentaEmprendedorAdmin(admin.ModelAdmin):
+    list_display = ('emprendedor', 'mercado_campesino', 'venta', 'fecha_venta')
+    list_filter = ('mercado_campesino', 'fecha_venta')
+    search_fields = ('emprendedor__primer_nombre', 'emprendedor__primer_apellido', 'mercado_campesino__nombre')
+
 @admin.register(MercadoCampesino)
 class MercadoCampesinoAdmin(admin.ModelAdmin):
-    list_display = ('nombre', 'fecha', 'lugar', 'tipo_productos')
+    list_display = ('nombre', 'fecha', 'lugar', 'tipo_productos', 'total_venta')
     actions = [exportar_a_excel]
 
 

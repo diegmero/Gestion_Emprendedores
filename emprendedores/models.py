@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from datetime import date
+from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 
 class Emprendedor(models.Model):
     GENERO_CHOICES = [
@@ -186,6 +188,13 @@ class MercadoCampesino(Evento):
         # Método para mostrar el total de venta con formato
         return self.total_venta
     
+    @property
+    def total_venta(self):
+        return sum(venta.monto_venta for venta in self.ventaemprendedor_set.all())
+
+    def get_total_venta_display(self):
+        return f"{self.total_venta:,.2f}".replace(',', '.')
+    
 
 
 from django.db import models
@@ -200,3 +209,27 @@ class Inscripcion(models.Model):
 
     def __str__(self):
         return f"{self.emprendedor.primer_nombre} {self.emprendedor.primer_apellido} - {self.evento.nombre}"
+    
+
+
+class VentaEmprendedor(models.Model):
+    emprendedor = models.ForeignKey(Emprendedor, on_delete=models.CASCADE)
+    mercado_campesino = models.ForeignKey(MercadoCampesino, on_delete=models.CASCADE)
+    monto_venta = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        validators=[MinValueValidator(0)],
+        help_text="Ingrese el monto de la venta sin separadores de miles"
+    )
+    fecha_venta = models.DateField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('emprendedor', 'mercado_campesino')
+        verbose_name = "Venta de Emprendedor"
+        verbose_name_plural = "Ventas de Emprendedores"
+
+    def __str__(self):
+        return f"{self.emprendedor} - {self.mercado_campesino} - ${self.monto_venta}"
+
+    def venta(self):
+        return f"{self.monto_venta:,.2f}".replace(',', '.')
