@@ -21,12 +21,29 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'crear_evento' 'evento' %}">Crear Evento</a>
                 </li>
-                <!-- Agrega más elementos de menú según sea necesario -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'lista_emprendedores' %}">Emprendedores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'inscribir_emprendedor' %}">Inscribir Emprendedor</a>
+                </li>
             </ul>
         </div>
     </nav>
 
     <main>
+        {% if messages %}
+        <div class="container mt-3">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
         {% block content %}
         {% endblock %}
     </main>

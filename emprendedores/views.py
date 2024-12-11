@@ -35,18 +35,45 @@ class EmprendedorViewSet(viewsets.ModelViewSet):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import Evento, Asesoria, Taller, MercadoCampesino, Inscripcion, Emprendedor
-from .forms import EventoForm, AsesoriaForm, TallerForm, MercadoCampesinoForm, InscripcionForm
+from .models import Evento, Asesoria, Taller, MercadoCampesino, Emprendedor
+from .forms import EventoForm, AsesoriaForm, TallerForm, MercadoCampesinoForm
 from django.contrib.contenttypes.models import ContentType
 
 def lista_eventos(request):
     eventos = Evento.objects.all()
     return render(request, 'emprendedores/lista_eventos.html', {'eventos': eventos})
 
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.admin.views.decorators import staff_member_required
+from .models import Inscripcion
+from .forms import InscripcionForm
+
+
+@staff_member_required
 def detalle_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
-    inscripciones = Inscripcion.objects.filter(object_id=evento.id, content_type=ContentType.objects.get_for_model(evento))
-    return render(request, 'emprendedores/detalle_evento.html', {'evento': evento, 'inscripciones': inscripciones})
+    inscripciones = Inscripcion.objects.filter(evento=evento)
+    
+    if request.method == 'POST':
+        form = InscripcionForm(request.POST)
+        if form.is_valid():
+            emprendedor = form.cleaned_data['emprendedor']
+            if not Inscripcion.objects.filter(evento=evento, emprendedor=emprendedor).exists():
+                Inscripcion.objects.create(evento=evento, emprendedor=emprendedor)
+                messages.success(request, f'{emprendedor.nombre} ha sido inscrito en el evento.')
+            else:
+                messages.warning(request, f'{emprendedor.nombre} ya está inscrito en este evento.')
+            return redirect('detalle_evento', evento_id=evento.id)
+    else:
+        form = InscripcionForm()
+
+    return render(request, 'emprendedores/detalle_evento.html', {
+        'evento': evento,
+        'inscripciones': inscripciones,
+        'form': form
+    })
+
 
 def crear_evento(request, tipo_evento):
     if tipo_evento == 'asesoria':
@@ -73,16 +100,59 @@ def crear_evento(request, tipo_evento):
 
     return render(request, template_name, {'form': form})
 
-def inscribir_emprendedor(request, evento_id):
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from .models import Evento, Inscripcion
+
+@login_required
+def inscribir_evento(request, evento_id):
     evento = get_object_or_404(Evento, id=evento_id)
+    if request.method == 'POST':
+        if Inscripcion.objects.filter(usuario=request.user, evento=evento).exists():
+            messages.warning(request, 'Ya estás inscrito en este evento.')
+        else:
+            Inscripcion.objects.create(usuario=request.user, evento=evento)
+            messages.success(request, 'Te has inscrito exitosamente al evento.')
+    return redirect('detalle_evento', evento_id=evento.id)
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Evento, Emprendedor, Inscripcion
+from .forms import InscripcionForm
+
+@staff_member_required
+def inscribir_emprendedor(request):
     if request.method == 'POST':
         form = InscripcionForm(request.POST)
         if form.is_valid():
-            inscripcion = form.save(commit=False)
-            inscripcion.evento = evento
-            inscripcion.save()
-            messages.success(request, 'Inscripción realizada exitosamente.')
-            return redirect('detalle_evento', evento_id=evento.id)
+            evento = form.cleaned_data['evento']
+            emprendedor = form.cleaned_data['emprendedor']
+            if not Inscripcion.objects.filter(evento=evento, emprendedor=emprendedor).exists():
+                Inscripcion.objects.create(evento=evento, emprendedor=emprendedor)
+                messages.success(request, f'{emprendedor.primer_nombre} {emprendedor.primer_apellido} ha sido inscrito en el evento {evento.nombre}.')
+            else:
+                messages.warning(request, f'{emprendedor.primer_nombre} {emprendedor.primer_apellido} ya está inscrito en este evento.')
+            return redirect('lista_eventos')
     else:
         form = InscripcionForm()
-    return render(request, 'emprendedores/inscribir_emprendedor.html', {'form': form, 'evento': evento})
+    return render(request, 'emprendedores/inscribir_emprendedor.html', {'form': form})
+
+
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.paginator import Paginator
+from .models import Emprendedor
+
+@staff_member_required
+def lista_emprendedores(request):
+    emprendedores_list = Emprendedor.objects.all().order_by('primer_apellido', 'primer_nombre')
+    paginator = Paginator(emprendedores_list, 20)  # Mostrar 20 emprendedores por página
+    
+    page_number = request.GET.get('page')
+    emprendedores = paginator.get_page(page_number)
+    
+    return render(request, 'emprendedores/lista_emprendedores.html', {'emprendedores': emprendedores})

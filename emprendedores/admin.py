@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Emprendedor
+from .models import Emprendedor, Inscripcion
 
 @admin.register(Emprendedor)
 class EmprendedorAdmin(admin.ModelAdmin):
@@ -49,7 +49,7 @@ class EmprendedorAdmin(admin.ModelAdmin):
     
 
 
-from .models import Emprendedor, Evento, Asesoria, Taller, MercadoCampesino, Inscripcion
+from .models import Emprendedor, Evento, Asesoria, Taller, MercadoCampesino
 
 
 @admin.register(Evento)
@@ -70,27 +70,8 @@ class MercadoCampesinoAdmin(admin.ModelAdmin):
     list_display = ('nombre', 'fecha', 'lugar', 'tipo_productos')
 
 
-
-from django.contrib.contenttypes.models import ContentType
-
 @admin.register(Inscripcion)
 class InscripcionAdmin(admin.ModelAdmin):
-    list_display = ('get_emprendedores', 'get_evento', 'fecha_inscripcion')
-    list_filter = ('tipo_evento', 'fecha_inscripcion')
-    search_fields = ('emprendedores__primer_nombre', 'emprendedores__primer_apellido', 'evento__nombre')
-    filter_horizontal = ('emprendedores',)
-
-    def get_emprendedores(self, obj):
-        return ", ".join([str(e) for e in obj.emprendedores.all()])
-    get_emprendedores.short_description = 'Emprendedores'
-
-    def get_evento(self, obj):
-        return str(obj.evento)
-    get_evento.short_description = 'Evento'
-
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        if db_field.name == "tipo_evento":
-            kwargs["queryset"] = ContentType.objects.filter(
-                model__in=['asesoria', 'taller', 'mercadocampesino']
-            )
-        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+    list_display = ('evento', 'emprendedor', 'fecha_inscripcion')
+    list_filter = ('evento', 'fecha_inscripcion')
+    search_fields = ('evento__nombre', 'emprendedor__primer_nombre', 'emprendedor__primer_apellido')

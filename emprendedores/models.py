@@ -124,12 +124,6 @@ def actualizar_rango_edad(sender, instance, **kwargs):
     instance.rango_edad = instance.calcular_rango_edad()
 
 
-
-
-from django.contrib.contenttypes.fields import GenericForeignKey
-from django.contrib.contenttypes.models import ContentType
-
-
 class Evento(models.Model):
     nombre = models.CharField(max_length=200)
     fecha = models.DateTimeField()
@@ -158,35 +152,16 @@ class MercadoCampesino(Evento):
     ]
     tipo_productos = models.CharField(max_length=2, choices=TIPO_PRODUCTOS_CHOICES)
 
+
 from django.db import models
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes.fields import GenericForeignKey
 
 class Inscripcion(models.Model):
-    emprendedores = models.ManyToManyField(Emprendedor, related_name='inscripciones')
-    tipo_evento = models.ForeignKey(
-        ContentType, 
-        on_delete=models.CASCADE, 
-        limit_choices_to={'model__in': ('asesoria', 'taller', 'mercadocampesino')},
-        verbose_name="Tipo de Evento"
-    )
-    objeto_id = models.PositiveIntegerField(verbose_name="ID del Evento")
-    evento = GenericForeignKey('tipo_evento', 'objeto_id')
+    emprendedor = models.ForeignKey(Emprendedor, on_delete=models.CASCADE)
+    evento = models.ForeignKey(Evento, on_delete=models.CASCADE)
     fecha_inscripcion = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        unique_together = ('emprendedor', 'evento')
 
     def __str__(self):
-        return f"Inscripción a {self.evento} - {self.fecha_inscripcion}"
-
-    class Meta:
-        verbose_name = "Inscripción"
-        verbose_name_plural = "Inscripciones"
-        unique_together = ('tipo_evento', 'objeto_id')
-
-    def __str__(self):
-        return f"Inscripción a {self.evento} - {self.fecha_inscripcion}"
-
-    class Meta:
-        verbose_name = "Inscripción"
-        verbose_name_plural = "Inscripciones"
-        unique_together = ('tipo_evento', 'objeto_id')
+        return f"{self.emprendedor.primer_nombre} {self.emprendedor.primer_apellido} - {self.evento.nombre}"
