@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Lista de Eventos</h1>
+    <div class="row">
+        {% for evento in eventos %}
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ evento.nombre }}</h5>
+                        <p class="card-text">{{ evento.descripcion|truncatewords:20 }}</p>
+                        <p class="card-text"><small class="text-muted">{{ evento.fecha|date:"d/m/Y H:i" }}</small></p>
+                        <a href="{% url 'detalle_evento' evento.id %}" class="btn btn-primary">Ver detalles</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <p>No hay eventos programados.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">{{ evento.nombre }}</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Detalles del Evento</h5>
+            <p class="card-text"><strong>Fecha:</strong> {{ evento.fecha|date:"d/m/Y H:i" }}</p>
+            <p class="card-text"><strong>Lugar:</strong> {{ evento.lugar }}</p>
+            <p class="card-text"><strong>Capacidad:</strong> {{ evento.capacidad }}</p>
+            <p class="card-text">{{ evento.descripcion }}</p>
+            
+            {% if evento.asesoria %}
+                <p class="card-text"><strong>Tema:</strong> {{ evento.asesoria.tema }}</p>
+                <p class="card-text"><strong>Asesor:</strong> {{ evento.asesoria.asesor }}</p>
+            {% elif evento.taller %}
+                <p class="card-text"><strong>Tema:</strong> {{ evento.taller.tema }}</p>
+                <p class="card-text"><strong>Instructor:</strong> {{ evento.taller.instructor }}</p>
+                <p class="card-text"><strong>Duración:</strong> {{ evento.taller.duracion }}</p>
+            {% elif evento.mercadocampesino %}
+                <p class="card-text"><strong>Tipo de productos:</strong> {{ evento.mercadocampesino.tipo_productos }}</p>
+                <p class="card-text"><strong>Número de puestos:</strong> {{ evento.mercadocampesino.numero_puestos }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <h2 class="mt-4 mb-3">Inscripciones</h2>
+    <ul class="list-group">
+        {% for inscripcion in inscripciones %}
+            <li class="list-group-item">{{ inscripcion.emprendedor.primer_nombre }} {{ inscripcion.emprendedor.primer_apellido }}</li>
+        {% empty %}
+            <li class="list-group-item">No hay inscripciones aún.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'inscribir_emprendedor' evento.id %}" class="btn btn-primary mt-3">Inscribir Emprendedor</a>
+</div>
+{% endblock %}

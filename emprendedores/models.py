@@ -122,3 +122,71 @@ from django.dispatch import receiver
 @receiver(pre_save, sender=Emprendedor)
 def actualizar_rango_edad(sender, instance, **kwargs):
     instance.rango_edad = instance.calcular_rango_edad()
+
+
+
+
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+
+
+class Evento(models.Model):
+    nombre = models.CharField(max_length=200)
+    fecha = models.DateTimeField()
+    descripcion = models.TextField()
+    lugar = models.CharField(max_length=200)
+    capacidad = models.IntegerField()
+
+    def __str__(self):
+        return self.nombre
+
+class Asesoria(Evento):
+    asesor = models.CharField(max_length=100)
+    duracion_horas = models.DurationField(null=True, blank=True)
+
+class Taller(Evento):
+    instructor = models.CharField(max_length=100)
+    duracion = models.DurationField()
+
+class MercadoCampesino(Evento):
+    TIPO_PRODUCTOS_CHOICES = [
+        ('FR', 'Frutas y Verduras'),
+        ('LA', 'Lácteos'),
+        ('CA', 'Carnes'),
+        ('AR', 'Viveres'),
+        ('OT', 'Otros'),
+    ]
+    tipo_productos = models.CharField(max_length=2, choices=TIPO_PRODUCTOS_CHOICES)
+
+from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
+
+class Inscripcion(models.Model):
+    emprendedores = models.ManyToManyField(Emprendedor, related_name='inscripciones')
+    tipo_evento = models.ForeignKey(
+        ContentType, 
+        on_delete=models.CASCADE, 
+        limit_choices_to={'model__in': ('asesoria', 'taller', 'mercadocampesino')},
+        verbose_name="Tipo de Evento"
+    )
+    objeto_id = models.PositiveIntegerField(verbose_name="ID del Evento")
+    evento = GenericForeignKey('tipo_evento', 'objeto_id')
+    fecha_inscripcion = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return f"Inscripción a {self.evento} - {self.fecha_inscripcion}"
+
+    class Meta:
+        verbose_name = "Inscripción"
+        verbose_name_plural = "Inscripciones"
+        unique_together = ('tipo_evento', 'objeto_id')
+
+    def __str__(self):
+        return f"Inscripción a {self.evento} - {self.fecha_inscripcion}"
+
+    class Meta:
+        verbose_name = "Inscripción"
+        verbose_name_plural = "Inscripciones"
+        unique_together = ('tipo_evento', 'objeto_id')
