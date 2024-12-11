@@ -1,1 +1,0 @@
-web: gunicorn gestion_emprendedores.wsgi

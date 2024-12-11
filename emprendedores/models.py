@@ -142,6 +142,12 @@ class Taller(Evento):
     instructor = models.CharField(max_length=100)
     duracion = models.PositiveIntegerField(verbose_name="Duración (horas)", null=True, blank=True) 
 
+
+
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+from django.db import models
+
 class MercadoCampesino(Evento):
     TIPO_PRODUCTOS_CHOICES = [
         ('FR', 'Frutas y Verduras'),
@@ -151,6 +157,35 @@ class MercadoCampesino(Evento):
         ('OT', 'Otros'),
     ]
     tipo_productos = models.CharField(max_length=2, choices=TIPO_PRODUCTOS_CHOICES)
+    total_venta = models.CharField(
+        max_length=20,
+        validators=[
+            RegexValidator(
+                regex=r'^\d{1,3}(\.\d{3})*$',
+                message='Ingrese un número válido con puntos como separadores de miles.',
+                code='invalid_number'
+            )
+        ],
+        help_text='Ingrese el total de ventas con puntos como separadores de miles (ej. 3.000.000)'
+    )
+
+    def clean(self):
+        super().clean()
+        if self.total_venta:
+            try:
+                # Convertir el string a un entero
+                int(self.total_venta.replace('.', ''))
+            except ValueError:
+                raise ValidationError({'total_venta': 'Ingrese un número válido.'})
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def get_total_venta_display(self):
+        # Método para mostrar el total de venta con formato
+        return self.total_venta
+    
 
 
 from django.db import models
