@@ -26,7 +26,7 @@ SECRET_KEY = 'yBz4o9HMmFubO5z2sSGUgZJJjCMYpXwCMLWee3BlCKfccHdPrAy9oe5aeytZVJ6Aad
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'diegmero12.pythonanywhere.com']
 
 
 # Application definition
